@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>629</width>
-    <height>486</height>
+    <width>638</width>
+    <height>489</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>骑士环游小游戏 by Louie</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>image.ico</normaloff>image.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="horizontalLayoutWidget">
@@ -23,18 +27,79 @@
       <height>421</height>
      </rect>
     </property>
-    <layout class="QHBoxLayout" name="horizontalLayout"/>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QFrame" name="frame">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>490</x>
+      <x>500</x>
       <y>10</y>
       <width>121</width>
       <height>421</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>119</width>
+         <height>15</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>棋盘大小：</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radio_6">
+       <property name="text">
+        <string>6x6</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radio_8">
+       <property name="acceptDrops">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>8x8</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radio_10">
+       <property name="text">
+        <string>10x10</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QRadioButton" name="radio_12">
+       <property name="text">
+        <string>12x12</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QLabel" name="label">
        <property name="enabled">
@@ -59,21 +124,28 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="btn_getpath">
        <property name="text">
-        <string>开始游戏</string>
+        <string>获取路径</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="btn_start">
+       <property name="text">
+        <string>下一步</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_restart">
        <property name="text">
         <string>重新开始</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="btn_settings">
        <property name="text">
         <string>游戏设置</string>
        </property>
@@ -87,7 +159,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>629</width>
+     <width>638</width>
      <height>23</height>
     </rect>
    </property>
@@ -95,16 +167,11 @@
     <property name="title">
      <string>游戏选项</string>
     </property>
-    <widget class="QMenu" name="menuSize">
-     <property name="title">
-      <string>size</string>
-     </property>
-     <addaction name="action8x8"/>
-    </widget>
-    <addaction name="menuSize"/>
     <addaction name="separator"/>
     <addaction name="actionStart"/>
     <addaction name="actionRestart"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
    </widget>
    <addaction name="menu"/>
   </widget>
@@ -126,32 +193,53 @@
   </action>
   <action name="actionRestart">
    <property name="text">
-    <string>restart</string>
+    <string>重新开始</string>
    </property>
   </action>
   <action name="actionStart">
    <property name="text">
-    <string>start</string>
+    <string>开始游戏</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>退出</string>
+   </property>
+   <property name="toolTip">
+    <string>退出游戏</string>
+   </property>
+  </action>
+  <action name="action6x6_2">
+   <property name="text">
+    <string>6x6</string>
+   </property>
+  </action>
+  <action name="action10x10_2">
+   <property name="text">
+    <string>10x10</string>
    </property>
   </action>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>MainWindow</sender>
-   <signal>destroyed()</signal>
-   <receiver>action6x6</receiver>
-   <slot>trigger()</slot>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>314</x>
-     <y>242</y>
-    </hint>
-    <hint type="destinationlabel">
      <x>-1</x>
      <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>318</x>
+     <y>244</y>
     </hint>
    </hints>
   </connection>
  </connections>
+ <slots>
+  <slot>on_click()</slot>
+ </slots>
 </ui>
