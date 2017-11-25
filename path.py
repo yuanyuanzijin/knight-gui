@@ -39,8 +39,8 @@ def search_next(size, pos, history):
     else:
         return False
 
-def search_path(size, position, history):
-    history.append(position)
+def search_path(size, history):
+    position = history[-1]
     back = search_next(size, position, history)
     if back:
         return history
