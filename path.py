@@ -1,6 +1,5 @@
 import sys
 
-sys.setrecursionlimit(1000000)
 def init_path(size):
     allow = []
     for i in range(size):
@@ -16,8 +15,7 @@ def get_next_choice(step, hist, raws, allow):
             num += 1
     return num
 
-def search_next(size, pos, history):
-    allow = init_path(size)
+def search_next(size, pos, history, allow):
     nextsteps = {}
     raws = [[1,2], [1,-2], [2,1], [2,-1], [-1,2], [-1,-2], [-2,1], [-2,-1]]
     if len(history) == size*size:
@@ -31,7 +29,7 @@ def search_next(size, pos, history):
     
     for nextstep in nextsteps.values():
         history.append(nextstep)
-        back = search_next(size, nextstep, history)
+        back = search_next(size, nextstep, history, allow)
         if back:
             return True
         else:
@@ -40,8 +38,9 @@ def search_next(size, pos, history):
         return False
 
 def search_path(size, history):
+    allow = init_path(size)
     position = history[-1]
-    back = search_next(size, position, history)
+    back = search_next(size, position, history, allow)
     if back:
         return history
     else:

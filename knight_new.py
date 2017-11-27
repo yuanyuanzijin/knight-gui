@@ -26,7 +26,7 @@ class App(QMainWindow):
         self.init_y = 40
         self.length = 400
         self.size = 8
-        self.init_position = [4,5]
+        self.init_position = [0,0]
         self.each = self.length/self.size
         self.path = []
         self.step = 0
