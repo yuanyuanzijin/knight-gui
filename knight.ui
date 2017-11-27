@@ -126,14 +126,14 @@
      <item>
       <widget class="QPushButton" name="btn_start">
        <property name="text">
-        <string>开始环游</string>
+        <string>开始环游/停止</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="btn_restart">
        <property name="text">
-        <string>重新开始</string>
+        <string>清空页面</string>
        </property>
       </widget>
      </item>

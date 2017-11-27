@@ -1,4 +1,4 @@
-import sys
+import sys, time
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QMessageBox, QPushButton, QAction, qApp
 from PyQt5.QtGui import QIcon, QPen, QPainter, QColor
 from PyQt5.QtCore import pyqtSlot, Qt, QThread, pyqtSignal
@@ -14,10 +14,20 @@ class ThreadPath(QThread):
     def run(self):  
         result = search_path(self.size, self.history)
         self.pathSignal.emit(result)
+
+
+class ThreadClock(QThread): 
+    clockSignal = pyqtSignal()  
+    def __init__(self, step_time):  
+        super(ThreadClock,self).__init__()
+        self.step_time = step_time
         
+    def run(self):  
+        time.sleep(self.step_time)
+        self.clockSignal.emit()    
+
 
 class App(QMainWindow):
-    
     def __init__(self):
         super().__init__()
         loadUi('knight.ui', self)
@@ -31,6 +41,8 @@ class App(QMainWindow):
         self.path = []
         self.step = 0
         self.allpath = []
+        self.step_time = 0.5
+        self.start = 0
         
     def initUI(self):
         self.btn_start.clicked.connect(self.btn_start_onclick)
@@ -78,25 +90,48 @@ class App(QMainWindow):
         qp.setBrush(QColor(147, 112, 219))
         qp.drawRect(self.init_x+pos[1]*self.each, self.init_y+pos[0]*self.each, self.each, self.each)
 
-    def getpath(self):
-        if not self.path:
-            self.path.append(self.init_position)
-        self.thread = ThreadPath(self.size, self.path)
-        self.thread.pathSignal.connect(self.callbackPath)
-        self.thread.start()  
-
-    def callbackPath(self, back):    
+    def callbackPath(self, back):
         self.allpath = back
+        print(back)
+        self.clock()
+
+    def clock(self):
+        self.thread_time = ThreadClock(self.step_time)
+        self.thread_time.clockSignal.connect(self.callbackClock)
+        self.thread_time.start()
+    
+    def callbackClock(self):
+        if self.start:
+            if self.step < self.size*self.size:
+                self.step += 1
+                self.path = self.allpath[0:self.step]
+                self.repaint()
+                self.clock()
+            else:
+                self.start = 0
+                print('环游结束！')
 
     def btn_start_onclick(self):
-        self.step += 1
-        self.path = self.allpath[0:self.step]
-        self.repaint()
+        if not self.start:
+            self.start = 1
+            self.step = 0
+            self.path = []
+            self.allpath = []
+            self.repaint()
+            self.path.append(self.init_position)
+            self.thread = ThreadPath(self.size, self.path)
+            self.thread.pathSignal.connect(self.callbackPath)
+            self.thread.start()
+        else:
+            self.start = 0
+            print('停止环游')
     
     def btn_restart_onclick(self):
         self.step = 0
         self.path = []
+        self.allpath = []
         self.repaint()
+        self.start = 0
 
     def changesize(self, size):
         self.size = size
@@ -105,7 +140,7 @@ class App(QMainWindow):
         self.step = 0
         self.allpath = []
         self.repaint()
-        self.getpath()
+        self.start = 0
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self,'确认退出','你确定要退出么？', QMessageBox.Yes, QMessageBox.No)
