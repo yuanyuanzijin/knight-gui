@@ -34,7 +34,7 @@ class App(QMainWindow):
         self.initUI()
         self.init_x = 20
         self.init_y = 40
-        self.length = 400
+        self.length = 500
         self.size = 8
         self.init_position = [0,0]
         self.each = self.length/self.size
@@ -52,6 +52,7 @@ class App(QMainWindow):
         self.radio_8.clicked.connect(lambda:self.changesize(8))
         self.radio_10.clicked.connect(lambda:self.changesize(10))
         self.radio_12.clicked.connect(lambda:self.changesize(12))
+        self.slider_clock.valueChanged.connect(self.changeValue)
 
     @pyqtSlot()
     def paintEvent(self, e):
@@ -118,6 +119,10 @@ class App(QMainWindow):
             self.path = []
             self.allpath = []
             self.repaint()
+            init_X = self.spin_x.value()-1
+            init_Y = self.spin_y.value()-1
+            self.init_position = [init_X, init_Y]
+            print(self.init_position)
             self.path.append(self.init_position)
             self.thread = ThreadPath(self.size, self.path)
             self.thread.pathSignal.connect(self.callbackPath)
@@ -141,6 +146,12 @@ class App(QMainWindow):
         self.allpath = []
         self.repaint()
         self.start = 0
+        self.spin_x.setMaximum(size)
+        self.spin_y.setMaximum(size)
+
+    def changeValue(self, value):  
+        self.step_time = self.slider_clock.value()/10
+        self.label_clock.setText(str(self.step_time))
 
     def closeEvent(self, event):
         reply = QMessageBox.question(self,'确认退出','你确定要退出么？', QMessageBox.Yes, QMessageBox.No)
