@@ -17,6 +17,12 @@
    <iconset>
     <normaloff>image.ico</normaloff>image.ico</iconset>
   </property>
+  <property name="toolTip">
+   <string/>
+  </property>
+  <property name="statusTip">
+   <string>欢迎来到骑士环游小游戏~</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
@@ -229,25 +235,25 @@
      <rect>
       <x>570</x>
       <y>340</y>
-      <width>141</width>
-      <height>41</height>
+      <width>121</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>开始环游/停止</string>
+     <string>开始环游</string>
     </property>
    </widget>
    <widget class="QPushButton" name="btn_restart">
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>400</y>
-      <width>141</width>
-      <height>41</height>
+      <y>420</y>
+      <width>121</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>清空页面</string>
+     <string>重新开始</string>
     </property>
    </widget>
    <widget class="QRadioButton" name="radio_6">
@@ -336,12 +342,34 @@
      <string>初始位置</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btn_onestep">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>380</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>单步执行</string>
+    </property>
+   </widget>
+   <zorder>horizontalLayoutWidget_2</zorder>
+   <zorder>radio_12</zorder>
+   <zorder>label</zorder>
+   <zorder>slider_clock</zorder>
+   <zorder>btn_start</zorder>
+   <zorder>btn_restart</zorder>
+   <zorder>radio_6</zorder>
+   <zorder>label_2</zorder>
+   <zorder>radio_8</zorder>
+   <zorder>radio_10</zorder>
+   <zorder>label_3</zorder>
    <zorder>horizontalLayoutWidget</zorder>
-   <zorder>verticalLayoutWidget</zorder>
-   <zorder>label_4</zorder>
-   <zorder>frame</zorder>
    <zorder>label_clock</zorder>
    <zorder>label_6</zorder>
+   <zorder>btn_onestep</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

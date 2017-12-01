@@ -46,6 +46,7 @@ class App(QMainWindow):
         
     def initUI(self):
         self.btn_start.clicked.connect(self.btn_start_onclick)
+        self.btn_onestep.clicked.connect(self.btn_onestep_onclick)
         self.btn_restart.clicked.connect(self.btn_restart_onclick)
         self.choices = [self.radio_6, self.radio_8, self.radio_10, self.radio_12]
         self.radio_6.clicked.connect(lambda:self.changesize(6))
@@ -94,6 +95,12 @@ class App(QMainWindow):
     def callbackPath(self, back):
         self.allpath = back
         print(back)
+        self.btn_start.setEnabled(True)
+        if self.start:
+            self.btn_start.setText('暂停游戏')
+        else:
+            self.btn_start.setText('开始环游')
+            self.btn_onestep.setEnabled(True)
         self.clock()
 
     def clock(self):
@@ -102,41 +109,59 @@ class App(QMainWindow):
         self.thread_time.start()
     
     def callbackClock(self):
-        if self.start:
-            if self.step < self.size*self.size:
-                self.step += 1
-                self.path = self.allpath[0:self.step]
-                self.repaint()
+        if self.step < self.size*self.size:
+            self.step += 1
+            self.path = self.allpath[0:self.step]
+            self.repaint()
+            if self.start:
                 self.clock()
-            else:
-                self.start = 0
-                print('环游结束！')
+        else:
+            self.start = 0
+            self.btn_start.setText('游戏结束')
+            self.btn_start.setEnabled(False)
+            self.btn_onestep.setEnabled(False)
 
     def btn_start_onclick(self):
-        if not self.start:
+        if self.step == 0:
             self.start = 1
-            self.step = 0
             self.path = []
             self.allpath = []
-            self.repaint()
             init_X = self.spin_x.value()-1
             init_Y = self.spin_y.value()-1
             self.init_position = [init_X, init_Y]
-            print(self.init_position)
             self.path.append(self.init_position)
             self.thread = ThreadPath(self.size, self.path)
             self.thread.pathSignal.connect(self.callbackPath)
             self.thread.start()
-        else:
+            self.btn_start.setText('搜索路径中...')
+            self.btn_start.setEnabled(False)
+            self.btn_onestep.setEnabled(False)
+        elif self.start:
             self.start = 0
-            print('停止环游')
+            self.btn_start.setText('继续环游')
+            self.btn_onestep.setEnabled(True)
+        else:
+            self.start = 1
+            self.callbackClock()
+            self.btn_start.setText('暂停游戏')
+            self.btn_onestep.setEnabled(False)
     
+    def btn_onestep_onclick(self):
+        if self.step == 0:
+            self.btn_start_onclick()
+            self.start = 0
+        else:
+            self.callbackClock()
+
     def btn_restart_onclick(self):
         self.step = 0
         self.path = []
         self.allpath = []
         self.repaint()
         self.start = 0
+        self.btn_start.setEnabled(True)
+        self.btn_onestep.setEnabled(True)
+        self.btn_start.setText('开始环游')
 
     def changesize(self, size):
         self.size = size
