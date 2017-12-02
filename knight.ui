@@ -355,6 +355,19 @@
      <string>单步执行</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btn_save">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>460</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>输出结果</string>
+    </property>
+   </widget>
    <zorder>horizontalLayoutWidget_2</zorder>
    <zorder>radio_12</zorder>
    <zorder>label</zorder>
@@ -370,6 +383,7 @@
    <zorder>label_clock</zorder>
    <zorder>label_6</zorder>
    <zorder>btn_onestep</zorder>
+   <zorder>btn_save</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

@@ -1,5 +1,5 @@
-import sys, time
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QMessageBox, QPushButton, QAction, qApp
+import sys, time, os, json
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QMessageBox, QPushButton, QAction, qApp, QFileDialog
 from PyQt5.QtGui import QIcon, QPen, QPainter, QColor
 from PyQt5.QtCore import pyqtSlot, Qt, QThread, pyqtSignal
 from PyQt5.uic import loadUi
@@ -54,6 +54,7 @@ class App(QMainWindow):
         self.radio_10.clicked.connect(lambda:self.changesize(10))
         self.radio_12.clicked.connect(lambda:self.changesize(12))
         self.slider_clock.valueChanged.connect(self.changeValue)
+        self.btn_save.clicked.connect(self.btn_save_onclick)
 
     @pyqtSlot()
     def paintEvent(self, e):
@@ -162,6 +163,26 @@ class App(QMainWindow):
         self.btn_start.setEnabled(True)
         self.btn_onestep.setEnabled(True)
         self.btn_start.setText('开始环游')
+
+    def btn_save_onclick(self):
+        if not self.allpath:
+            QMessageBox.warning(self, "提示", "请先开始游戏以获取路径")
+            return False
+        filepath, ok = QFileDialog.getSaveFileName(self, "文件保存", "C:/", "JSON Files (*.json)")
+        if not filepath:
+            return False
+        save_content = self.get_save_content()
+        with open(filepath, 'w') as f:
+            f.write(save_content)
+        QMessageBox.warning(self, "提示", "路径保存成功！")
+
+    def get_save_content(self):
+        save = {
+            'size': self.size,
+            'step': self.step,
+            'allpath': self.allpath
+        }
+        return json.dumps(save)
 
     def changesize(self, size):
         self.size = size
