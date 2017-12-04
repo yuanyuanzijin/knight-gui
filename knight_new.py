@@ -45,6 +45,7 @@ class App(QMainWindow):
         self.start = 0
         
     def initUI(self):
+        self.btn_import.clicked.connect(self.btn_import_onclick)
         self.btn_start.clicked.connect(self.btn_start_onclick)
         self.btn_onestep.clicked.connect(self.btn_onestep_onclick)
         self.btn_restart.clicked.connect(self.btn_restart_onclick)
@@ -175,6 +176,17 @@ class App(QMainWindow):
         with open(filepath, 'w') as f:
             f.write(save_content)
         QMessageBox.warning(self, "提示", "路径保存成功！")
+
+    def btn_import_onclick(self):
+        if self.step:
+            QMessageBox.warning(self, "提示", "游戏进行中，请点击重新开始后再导入")
+            return False
+        fileName, filetype = QFileDialog.getOpenFileName(self, "选取文件", "C:/", "JSON Files (*.json)")
+        if not fileName.endswith('.json'):
+            QMessageBox.warning(self, "提示", "文件格式有误")
+            return False
+        QMessageBox.warning(self, "提示", "导入功能正在编写")
+        print(fileName,filetype)  
 
     def get_save_content(self):
         save = {
