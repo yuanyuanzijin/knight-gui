@@ -182,6 +182,8 @@ class App(QMainWindow):
             QMessageBox.warning(self, "提示", "游戏进行中，请点击重新开始后再导入")
             return False
         fileName, filetype = QFileDialog.getOpenFileName(self, "选取文件", "C:/", "JSON Files (*.json)")
+        if not fileName:
+            return False
         if not fileName.endswith('.json'):
             QMessageBox.warning(self, "提示", "文件格式有误")
             return False
