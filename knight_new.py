@@ -6,23 +6,23 @@ from PyQt5.uic import loadUi
 from path import *
 
 class ThreadPath(QThread): 
-    pathSignal = pyqtSignal(list)  
-    def __init__(self, size, history):  
-        super(ThreadPath,self).__init__()  
+    pathSignal = pyqtSignal(list)
+    def __init__(self, size, history):
+        super(ThreadPath,self).__init__()
         self.size = size
         self.history = history
-    def run(self):  
+    def run(self):
         result = search_path(self.size, self.history)
         self.pathSignal.emit(result)
 
 
-class ThreadClock(QThread): 
-    clockSignal = pyqtSignal()  
-    def __init__(self, step_time):  
+class ThreadClock(QThread):
+    clockSignal = pyqtSignal()
+    def __init__(self, step_time):
         super(ThreadClock,self).__init__()
         self.step_time = step_time
-        
-    def run(self):  
+
+    def run(self):
         time.sleep(self.step_time)
         self.clockSignal.emit()    
 
@@ -187,14 +187,46 @@ class App(QMainWindow):
         if not fileName.endswith('.json'):
             QMessageBox.warning(self, "提示", "文件格式有误")
             return False
-        QMessageBox.warning(self, "提示", "导入功能正在编写")
-        print(fileName,filetype)  
+        try:
+            with open(fileName, 'r') as f:
+                content = json.loads(f.read())
+                size = content['size']
+                step = content['step']
+                allpath = content['allpath']
+                step_time = content['step_time']
+            self.size = size
+            self.step = step
+            self.each = self.length/self.size
+            self.allpath = allpath
+            self.path = self.allpath[0:self.step]
+            self.step_time = step_time
+            self.slider_clock.setValue(self.step_time)
+            if size == 6:
+                self.radio_6.setChecked(True)
+            elif size == 8:
+                self.radio_8.setChecked(True)
+            elif size == 10:
+                self.radio_10.setChecked(True)
+            else:
+                self.radio_12.setChecked(True)
+            self.init_position = allpath[0]
+            self.spin_x.setValue(self.init_position[0] + 1)
+            self.spin_y.setValue(self.init_position[1] + 1)
+            self.spin_x.setMaximum(size)
+            self.spin_y.setMaximum(size)
+            QMessageBox.warning(self, "提示", "历史导入成功！")
+            self.repaint()
+        except Exception as e:
+            QMessageBox.warning(self, "提示", "文件格式错误！")
+            print(e)
+            return False
 
     def get_save_content(self):
         save = {
             'size': self.size,
             'step': self.step,
-            'allpath': self.allpath
+            'allpath': self.allpath,
+            'step_time': self.step_time
         }
         return json.dumps(save)
 
