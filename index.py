@@ -32,6 +32,9 @@ class App(QMainWindow):
         super().__init__()
         loadUi('knight.ui', self)
         self.initUI()
+    
+    # 初始化函数
+    def initUI(self):
         self.init_x = 20
         self.init_y = 40
         self.length = 500
@@ -43,8 +46,6 @@ class App(QMainWindow):
         self.allpath = []
         self.step_time = 0.5
         self.start = 0
-        
-    def initUI(self):
         self.btn_import.clicked.connect(self.btn_import_onclick)
         self.btn_start.clicked.connect(self.btn_start_onclick)
         self.btn_onestep.clicked.connect(self.btn_onestep_onclick)
@@ -56,18 +57,8 @@ class App(QMainWindow):
         self.radio_12.clicked.connect(lambda:self.changesize(12))
         self.slider_clock.valueChanged.connect(self.changeValue)
         self.btn_save.clicked.connect(self.btn_save_onclick)
-
-    @pyqtSlot()
-    def paintEvent(self, e):
-        qp = QPainter()
-        qp.begin(self)
-        self.drawLines(qp)
-        if self.path:
-            for i in self.path[0:-1]:
-                self.drawRectangles(qp, i)
-            self.drawRectanglesActive(qp, self.path[-1])
-        qp.end()
-
+    
+    # 绘图函数
     def drawLines(self, qp):
         pen = QPen(Qt.black, 2, Qt.SolidLine)
         qp.setPen(pen)
@@ -94,35 +85,74 @@ class App(QMainWindow):
         qp.setBrush(QColor(147, 112, 219))
         qp.drawRect(self.init_x+pos[1]*self.each, self.init_y+pos[0]*self.each, self.each, self.each)
 
+    # 获取路径子线程执行后的回调函数
     def callbackPath(self, back):
-        self.allpath = back
         print(back)
+        self.allpath = back
         self.btn_start.setEnabled(True)
         if self.start:
             self.btn_start.setText('暂停游戏')
+            self.callbackClock()
         else:
             self.btn_start.setText('开始环游')
             self.btn_onestep.setEnabled(True)
-        self.clock()
+            self.onestep()
 
+    # 开启计时线程
     def clock(self):
         self.thread_time = ThreadClock(self.step_time)
         self.thread_time.clockSignal.connect(self.callbackClock)
         self.thread_time.start()
     
+    # 计时子线程执行后的回调函数 / 自动环游执行显示函数
     def callbackClock(self):
+        if self.start:
+            if self.step < self.size*self.size:
+                self.step += 1
+                self.path = self.allpath[0:self.step]
+                self.repaint()
+                self.clock()
+            else:
+                self.start = 0
+                self.btn_start.setText('游戏结束')
+                self.btn_start.setEnabled(False)
+                self.btn_onestep.setEnabled(False)
+
+    # 单步执行显示函数
+    def onestep(self):
         if self.step < self.size*self.size:
             self.step += 1
             self.path = self.allpath[0:self.step]
             self.repaint()
-            if self.start:
-                self.clock()
-        else:
+        if self.step >= self.size*self.size:
             self.start = 0
             self.btn_start.setText('游戏结束')
             self.btn_start.setEnabled(False)
             self.btn_onestep.setEnabled(False)
 
+    # 获取保存内容函数
+    def get_save_content(self):
+        save = {
+            'size': self.size,
+            'step': self.step,
+            'allpath': self.allpath,
+            'step_time': self.step_time
+        }
+        return json.dumps(save)
+
+    @pyqtSlot()
+    # 绘图时触发
+    def paintEvent(self, e):
+        qp = QPainter()
+        qp.begin(self)
+        self.drawLines(qp)
+        if self.path:
+            for i in self.path[0:-1]:
+                self.drawRectangles(qp, i)
+            self.drawRectanglesActive(qp, self.path[-1])
+        qp.end()
+
+    # 点击开始游戏触发
     def btn_start_onclick(self):
         if self.step == 0:
             self.start = 1
@@ -148,13 +178,15 @@ class App(QMainWindow):
             self.btn_start.setText('暂停游戏')
             self.btn_onestep.setEnabled(False)
     
+    # 点击单步执行触发
     def btn_onestep_onclick(self):
         if self.step == 0:
             self.btn_start_onclick()
             self.start = 0
         else:
-            self.callbackClock()
+            self.onestep()
 
+    # 点击重新开始触发
     def btn_restart_onclick(self):
         self.step = 0
         self.path = []
@@ -165,6 +197,7 @@ class App(QMainWindow):
         self.btn_onestep.setEnabled(True)
         self.btn_start.setText('开始环游')
 
+    # 点击保存路径触发
     def btn_save_onclick(self):
         if not self.allpath:
             QMessageBox.warning(self, "提示", "请先开始游戏以获取路径")
@@ -183,6 +216,7 @@ class App(QMainWindow):
         else:
             return False
 
+    # 点击导入路径触发
     def btn_import_onclick(self):
         if self.step:
             QMessageBox.warning(self, "提示", "游戏进行中，请点击重新开始后再导入")
@@ -227,15 +261,7 @@ class App(QMainWindow):
             print(e)
             return False
 
-    def get_save_content(self):
-        save = {
-            'size': self.size,
-            'step': self.step,
-            'allpath': self.allpath,
-            'step_time': self.step_time
-        }
-        return json.dumps(save)
-
+    # 改变棋盘大小触发
     def changesize(self, size):
         self.size = size
         self.each = self.length/self.size
@@ -247,17 +273,20 @@ class App(QMainWindow):
         self.spin_x.setMaximum(size)
         self.spin_y.setMaximum(size)
 
+    # 改变动画速度触发
     def changeValue(self, value):  
         self.step_time = self.slider_clock.value()/10
         self.label_clock.setText(str(self.step_time))
 
+    # 关闭窗口时触发
     def closeEvent(self, event):
         reply = QMessageBox.question(self,'确认退出','你确定要退出么？', QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
             event.accept()
         else:
             event.ignore()
- 
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = App()
