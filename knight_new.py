@@ -169,13 +169,19 @@ class App(QMainWindow):
         if not self.allpath:
             QMessageBox.warning(self, "提示", "请先开始游戏以获取路径")
             return False
-        filepath, ok = QFileDialog.getSaveFileName(self, "文件保存", "C:/", "JSON Files (*.json)")
-        if not filepath:
+        result= QMessageBox.information(self, "路径导出", 
+            "路径预览：\n\n棋盘尺寸：%d\n当前步数：%d\n当前路径：%s\n\n点击Yes导出" % (self.size, self.step, self.path),
+            QMessageBox.Yes | QMessageBox.No)
+        if result == 16384:
+            filepath, ok = QFileDialog.getSaveFileName(self, "文件保存", "C:/", "JSON Files (*.json)")
+            if not filepath:
+                return False
+            save_content = self.get_save_content()
+            with open(filepath, 'w') as f:
+                f.write(save_content)
+            QMessageBox.warning(self, "提示", "路径保存成功！")
+        else:
             return False
-        save_content = self.get_save_content()
-        with open(filepath, 'w') as f:
-            f.write(save_content)
-        QMessageBox.warning(self, "提示", "路径保存成功！")
 
     def btn_import_onclick(self):
         if self.step:
