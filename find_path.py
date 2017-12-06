@@ -37,11 +37,11 @@ def search_next(size, pos, history, allow):
     else:
         return False
 
-def search_path(size, history):
-    allow = init_path(size)
-    position = history[-1]
-    back = search_next(size, position, history, allow)
+def search_path(s, h):
+    allow = init_path(s)
+    position = h[-1]
+    back = search_next(s, position, h, allow)
     if back:
-        return history
+        return h
     else:
         return False

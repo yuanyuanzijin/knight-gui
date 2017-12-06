@@ -1,9 +1,9 @@
 import sys, time, os, json
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QMessageBox, QPushButton, QAction, qApp, QFileDialog
-from PyQt5.QtGui import QIcon, QPen, QPainter, QColor
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QMessageBox, QPushButton, QAction, qApp, QFileDialog, QLabel
+from PyQt5.QtGui import QIcon, QPen, QPainter, QColor, QImage, QPixmap
 from PyQt5.QtCore import pyqtSlot, Qt, QThread, pyqtSignal
 from PyQt5.uic import loadUi
-from path import *
+from find_path import *
 
 class ThreadPath(QThread): 
     pathSignal = pyqtSignal(list)
@@ -57,6 +57,11 @@ class App(QMainWindow):
         self.radio_12.clicked.connect(lambda:self.changesize(12))
         self.slider_clock.valueChanged.connect(self.changeValue)
         self.btn_save.clicked.connect(self.btn_save_onclick)
+        self.image_label = QLabel(self)  
+        self.image = QPixmap('./horse.png')   
+        self.image_label.setPixmap(self.image)
+        self.image_label.setGeometry(0, 0, 0, 0)
+        self.image_label.setScaledContents(True)
     
     # 绘图函数
     def drawLines(self, qp):
@@ -80,10 +85,7 @@ class App(QMainWindow):
         qp.drawRect(self.init_x+pos[1]*self.each, self.init_y+pos[0]*self.each, self.each, self.each)
 
     def drawRectanglesActive(self, qp, pos):
-        col = QColor(0, 0, 0)
-        qp.setPen(col)
-        qp.setBrush(QColor(147, 112, 219))
-        qp.drawRect(self.init_x+pos[1]*self.each, self.init_y+pos[0]*self.each, self.each, self.each)
+        self.image_label.setGeometry(self.init_x+pos[1]*self.each, self.init_y+pos[0]*self.each, self.each-1, self.each-1)
 
     # 获取路径子线程执行后的回调函数
     def callbackPath(self, back):
@@ -104,7 +106,7 @@ class App(QMainWindow):
         self.thread_time.clockSignal.connect(self.callbackClock)
         self.thread_time.start()
     
-    # 计时子线程执行后的回调函数 / 自动环游执行显示函数
+    # 计时子线程执行后的回调函数 & 自动环游执行显示函数
     def callbackClock(self):
         if self.start:
             if self.step < self.size*self.size:
@@ -146,7 +148,7 @@ class App(QMainWindow):
         qp = QPainter()
         qp.begin(self)
         self.drawLines(qp)
-        if self.path:
+        if self.allpath:
             for i in self.path[0:-1]:
                 self.drawRectangles(qp, i)
             self.drawRectanglesActive(qp, self.path[-1])
@@ -196,6 +198,7 @@ class App(QMainWindow):
         self.btn_start.setEnabled(True)
         self.btn_onestep.setEnabled(True)
         self.btn_start.setText('开始环游')
+        self.image_label.setGeometry(0, 0, 0, 0)
 
     # 点击保存路径触发
     def btn_save_onclick(self):
@@ -203,7 +206,7 @@ class App(QMainWindow):
             QMessageBox.warning(self, "提示", "请先开始游戏以获取路径")
             return False
         result= QMessageBox.information(self, "路径导出", 
-            "路径预览：\n\n棋盘尺寸：%d\n当前步数：%d\n当前路径：%s\n\n点击Yes导出" % (self.size, self.step, self.path),
+            "路径预览：\n\n棋盘尺寸：%d\n当前步数：%d\n当前路径：%s\n\n确定导出路径？" % (self.size, self.step, self.path),
             QMessageBox.Yes | QMessageBox.No)
         if result == 16384:
             filepath, ok = QFileDialog.getSaveFileName(self, "文件保存", "C:/", "JSON Files (*.json)")
