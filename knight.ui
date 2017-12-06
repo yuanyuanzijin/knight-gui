@@ -24,28 +24,6 @@
    <string>欢迎来到骑士环游小游戏~</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="horizontalLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>10</y>
-      <width>511</width>
-      <height>491</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QFrame" name="frame">
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
    <widget class="QLabel" name="label_clock">
     <property name="geometry">
      <rect>
@@ -392,12 +370,10 @@
    <zorder>radio_8</zorder>
    <zorder>radio_10</zorder>
    <zorder>label_3</zorder>
-   <zorder>horizontalLayoutWidget</zorder>
    <zorder>label_clock</zorder>
    <zorder>label_6</zorder>
    <zorder>btn_onestep</zorder>
    <zorder>btn_save</zorder>
-   <zorder>label_7</zorder>
    <zorder>btn_import</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">

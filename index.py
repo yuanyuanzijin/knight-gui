@@ -42,7 +42,7 @@ class App(QMainWindow):
         self.init_position = [0,0]
         self.each = self.length/self.size
         self.path = []
-        self.step = 0
+        self.step = 1
         self.allpath = []
         self.step_time = 0.5
         self.start = 0
@@ -50,6 +50,8 @@ class App(QMainWindow):
         self.btn_start.clicked.connect(self.btn_start_onclick)
         self.btn_onestep.clicked.connect(self.btn_onestep_onclick)
         self.btn_restart.clicked.connect(self.btn_restart_onclick)
+        self.spin_x.valueChanged.connect(self.pos_changed)
+        self.spin_y.valueChanged.connect(self.pos_changed)
         self.choices = [self.radio_6, self.radio_8, self.radio_10, self.radio_12]
         self.radio_6.clicked.connect(lambda:self.changesize(6))
         self.radio_8.clicked.connect(lambda:self.changesize(8))
@@ -62,6 +64,7 @@ class App(QMainWindow):
         self.image_label.setPixmap(self.image)
         self.image_label.setGeometry(0, 0, 0, 0)
         self.image_label.setScaledContents(True)
+        self.image_label.setGeometry(self.init_x, self.init_y, self.each-1, self.each-1)
     
     # 绘图函数
     def drawLines(self, qp):
@@ -156,7 +159,7 @@ class App(QMainWindow):
 
     # 点击开始游戏触发
     def btn_start_onclick(self):
-        if self.step == 0:
+        if self.step == 1:
             self.start = 1
             self.path = []
             self.allpath = []
@@ -182,7 +185,7 @@ class App(QMainWindow):
     
     # 点击单步执行触发
     def btn_onestep_onclick(self):
-        if self.step == 0:
+        if self.step == 1:
             self.btn_start_onclick()
             self.start = 0
         else:
@@ -190,15 +193,18 @@ class App(QMainWindow):
 
     # 点击重新开始触发
     def btn_restart_onclick(self):
-        self.step = 0
+        self.step = 1
         self.path = []
         self.allpath = []
         self.repaint()
         self.start = 0
+        init_X = self.spin_x.value()-1
+        init_Y = self.spin_y.value()-1
+        self.init_position = [init_X, init_Y]
         self.btn_start.setEnabled(True)
         self.btn_onestep.setEnabled(True)
         self.btn_start.setText('开始环游')
-        self.image_label.setGeometry(0, 0, 0, 0)
+        self.image_label.setGeometry(self.init_x+self.init_position[1]*self.each, self.init_y+self.init_position[0]*self.each, self.each-1, self.each-1)
 
     # 点击保存路径触发
     def btn_save_onclick(self):
@@ -221,7 +227,7 @@ class App(QMainWindow):
 
     # 点击导入路径触发
     def btn_import_onclick(self):
-        if self.step:
+        if self.step > 1:
             QMessageBox.warning(self, "提示", "游戏进行中，请点击重新开始后再导入")
             return False
         fileName, filetype = QFileDialog.getOpenFileName(self, "选取文件", "C:/", "JSON Files (*.json)")
@@ -269,17 +275,24 @@ class App(QMainWindow):
         self.size = size
         self.each = self.length/self.size
         self.path = []
-        self.step = 0
+        self.step = 1
         self.allpath = []
         self.repaint()
         self.start = 0
         self.spin_x.setMaximum(size)
         self.spin_y.setMaximum(size)
+        self.pos_changed()
 
     # 改变动画速度触发
     def changeValue(self, value):  
         self.step_time = self.slider_clock.value()/10
         self.label_clock.setText(str(self.step_time))
+
+    def pos_changed(self):
+        init_X = self.spin_x.value()-1
+        init_Y = self.spin_y.value()-1
+        self.init_position = [init_X, init_Y]
+        self.image_label.setGeometry(self.init_x+self.init_position[1]*self.each, self.init_y+self.init_position[0]*self.each, self.each-1, self.each-1)
 
     # 关闭窗口时触发
     def closeEvent(self, event):
