@@ -24,10 +24,11 @@ def search_next(size, pos, history, allow):
         nextstep = [raw[i]+pos[i] for i in range(2)]
         if nextstep in allow and nextstep not in history:
             next_choice = get_next_choice(nextstep, history, raws, allow)
-            nextsteps[next_choice] = nextstep
-    sorted(nextsteps.items())
-    
-    for nextstep in nextsteps.values():
+            nextsteps[str(nextstep)] = next_choice
+    nextsteps = sorted(nextsteps.items(), key=lambda d:d[1])
+
+    for nextstep in nextsteps:
+        nextstep = list(eval(nextstep[0]))
         history.append(nextstep)
         back = search_next(size, nextstep, history, allow)
         if back:
