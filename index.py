@@ -288,11 +288,22 @@ class App(QMainWindow):
         self.step_time = self.slider_clock.value()/10
         self.label_clock.setText(str(self.step_time))
 
+    # 修改起始位置触发
     def pos_changed(self):
         init_X = self.spin_x.value()-1
         init_Y = self.spin_y.value()-1
         self.init_position = [init_X, init_Y]
         self.image_label.setGeometry(self.init_x+self.init_position[1]*self.each, self.init_y+self.init_position[0]*self.each, self.each-1, self.each-1)
+
+    # 鼠标点击触发
+    def mousePressEvent(self, e):
+        if self.step <= 1:
+            if e.x() >= 20 and e.x() <= 520 and e.y() >= 40 and e.y() <= 540:
+                mouse_x = int((e.y()-40)/self.each)
+                mouse_y = int((e.x()-20)/self.each)
+                self.init_position = [mouse_x, mouse_y]
+                self.spin_x.setValue(mouse_x+1)
+                self.spin_y.setValue(mouse_y+1)
 
     # 关闭窗口时触发
     def closeEvent(self, event):

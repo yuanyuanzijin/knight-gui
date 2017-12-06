@@ -54,7 +54,7 @@
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>200</y>
+      <y>190</y>
       <width>128</width>
       <height>31</height>
      </rect>
@@ -359,6 +359,19 @@
      <string>导入上次结果</string>
     </property>
    </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>230</y>
+      <width>131</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>可以在棋盘上点击选择</string>
+    </property>
+   </widget>
    <zorder>horizontalLayoutWidget_2</zorder>
    <zorder>radio_12</zorder>
    <zorder>label</zorder>
@@ -375,6 +388,7 @@
    <zorder>btn_onestep</zorder>
    <zorder>btn_save</zorder>
    <zorder>btn_import</zorder>
+   <zorder>label_7</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
