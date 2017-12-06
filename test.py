@@ -1,6 +1,7 @@
 import sys
 import time
 
+num0 = 0
 def init_path(size):
     allow = []
     for i in range(size):
@@ -35,6 +36,7 @@ def search_next(size, pos, history, allow):
             return True
         else:
             history.pop()
+            num0 += 1
     else:
         return False
 
@@ -48,6 +50,7 @@ def search_path(size, history):
         return False
 
 atime = time.time()
-path = search_path(8, [[0,0]])
+path = search_path(10, [[8,8]])
 btime = time.time()
 print(btime - atime)
+print(num0)
