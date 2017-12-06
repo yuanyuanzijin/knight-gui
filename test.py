@@ -28,6 +28,8 @@ def search_next(size, pos, history, allow):
             next_choice = get_next_choice(nextstep, history, raws, allow)
             nextsteps[next_choice] = nextstep
     sorted(nextsteps.items())
+    print(nextsteps)
+    return
 
     for nextstep in nextsteps.values():
         history.append(nextstep)
@@ -36,6 +38,7 @@ def search_next(size, pos, history, allow):
             return True
         else:
             history.pop()
+            global num0
             num0 += 1
     else:
         return False
