@@ -65,6 +65,8 @@ class App(QMainWindow):
         self.image_label.setGeometry(0, 0, 0, 0)
         self.image_label.setScaledContents(True)
         self.image_label.setGeometry(self.init_x, self.init_y, self.each-1, self.each-1)
+
+        self.actionGetCode.triggered.connect(self.menuCode)
     
     # 绘图函数
     def drawLines(self, qp):
@@ -272,6 +274,9 @@ class App(QMainWindow):
 
     # 改变棋盘大小触发
     def changesize(self, size):
+        if self.step > 1:
+            QMessageBox.warning(self, "提示", "游戏进行中，请重新开始再切换棋盘！")
+            return False
         self.size = size
         self.each = self.length/self.size
         self.path = []
@@ -312,7 +317,14 @@ class App(QMainWindow):
             event.accept()
         else:
             event.ignore()
-
+    
+    # 源代码获取弹窗
+    def menuCode(self):
+        mcode = QMessageBox()
+        mcode.setWindowTitle("获取源代码")
+        mcode.setTextFormat(self, "本项目已开源，地址\nhttps://github.com/yuanyuanzijin/knight-gui")
+        mcode.setStyleSheet("font: 15pt; background-color:rgb(255, 255, 255)")
+        mcode.exec_()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

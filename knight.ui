@@ -253,7 +253,7 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>560</x>
+      <x>550</x>
       <y>60</y>
       <width>60</width>
       <height>15</height>
@@ -304,7 +304,7 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>560</x>
+      <x>550</x>
       <y>170</y>
       <width>71</width>
       <height>16</height>
@@ -404,37 +404,40 @@
      <string>游戏选项</string>
     </property>
     <addaction name="separator"/>
+    <addaction name="actionImport"/>
+    <addaction name="actionExport"/>
+    <addaction name="separator"/>
     <addaction name="actionStart"/>
     <addaction name="actionRestart"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>更多</string>
+    </property>
+    <addaction name="actionHistory"/>
+    <addaction name="actionGetCode"/>
+    <addaction name="actionAboutAuthor"/>
+   </widget>
    <addaction name="menu"/>
+   <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action6x6">
+  <action name="actionExport">
    <property name="text">
-    <string>6x6</string>
+    <string>导出结果</string>
    </property>
   </action>
-  <action name="action8x8">
-   <property name="text">
-    <string>8x8</string>
+  <action name="actionImport">
+   <property name="checkable">
+    <bool>false</bool>
    </property>
-  </action>
-  <action name="action10x10">
-   <property name="text">
-    <string>10x10</string>
+   <property name="checked">
+    <bool>false</bool>
    </property>
-  </action>
-  <action name="actionRestart">
    <property name="text">
-    <string>重新开始</string>
-   </property>
-  </action>
-  <action name="actionStart">
-   <property name="text">
-    <string>开始游戏</string>
+    <string>导入</string>
    </property>
   </action>
   <action name="actionExit">
@@ -445,19 +448,50 @@
     <string>退出游戏</string>
    </property>
   </action>
-  <action name="action6x6_2">
+  <action name="actionStart">
    <property name="text">
-    <string>6x6</string>
+    <string>开始游戏/暂停</string>
    </property>
   </action>
-  <action name="action10x10_2">
+  <action name="actionRestart">
    <property name="text">
-    <string>10x10</string>
+    <string>重新开始</string>
+   </property>
+  </action>
+  <action name="actionAboutAuthor">
+   <property name="text">
+    <string>关于作者</string>
+   </property>
+  </action>
+  <action name="actionHistory">
+   <property name="text">
+    <string>历次更新</string>
+   </property>
+  </action>
+  <action name="actionGetCode">
+   <property name="text">
+    <string>源代码获取</string>
    </property>
   </action>
  </widget>
  <resources/>
  <connections>
+  <connection>
+   <sender>actionImport</sender>
+   <signal>triggered()</signal>
+   <receiver>btn_import</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>630</x>
+     <y>58</y>
+    </hint>
+   </hints>
+  </connection>
   <connection>
    <sender>actionExit</sender>
    <signal>triggered()</signal>
@@ -471,6 +505,54 @@
     <hint type="destinationlabel">
      <x>318</x>
      <y>244</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionStart</sender>
+   <signal>triggered()</signal>
+   <receiver>btn_start</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>630</x>
+     <y>388</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRestart</sender>
+   <signal>triggered()</signal>
+   <receiver>btn_restart</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>630</x>
+     <y>468</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionExport</sender>
+   <signal>triggered()</signal>
+   <receiver>btn_save</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>630</x>
+     <y>508</y>
     </hint>
    </hints>
   </connection>
