@@ -1,4 +1,5 @@
 import sys, time, os, json
+import webbrowser
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QMessageBox, QPushButton, QAction, qApp, QFileDialog, QLabel
 from PyQt5.QtGui import QIcon, QPen, QPainter, QColor, QImage, QPixmap
 from PyQt5.QtCore import pyqtSlot, Qt, QThread, pyqtSignal
@@ -66,7 +67,9 @@ class App(QMainWindow):
         self.image_label.setScaledContents(True)
         self.image_label.setGeometry(self.init_x, self.init_y, self.each-1, self.each-1)
 
+        self.actionHistory.triggered.connect(self.menuHistory)
         self.actionGetCode.triggered.connect(self.menuCode)
+        self.actionAboutAuthor.triggered.connect(self.menuAuthor)
     
     # 绘图函数
     def drawLines(self, qp):
@@ -216,7 +219,7 @@ class App(QMainWindow):
         result= QMessageBox.information(self, "路径导出", 
             "路径预览：\n\n棋盘尺寸：%d\n当前步数：%d\n当前路径：%s\n\n确定导出路径？" % (self.size, self.step, self.path),
             QMessageBox.Yes | QMessageBox.No)
-        if result == 16384:
+        if result == QMessageBox.Yes:
             filepath, ok = QFileDialog.getSaveFileName(self, "文件保存", "C:/", "JSON Files (*.json)")
             if not filepath:
                 return False
@@ -318,13 +321,53 @@ class App(QMainWindow):
         else:
             event.ignore()
     
+    # 历史版本弹窗
+    def menuHistory(self):
+        reply = QMessageBox.information(self,'历代版本','''
+2017-11-23 V0.1.0 项目启动
+2017-11-24 V0.2.0 完成算法设计（find_path.py）
+2017-11-24 V0.3.0 完成简单的界面
+2017-11-25 V0.3.1 UI线程和工作线程分离
+2017-11-27 V0.3.2 实现自动播放
+2017-11-28 V0.3.3 实现改变速度
+2017-11-28 V0.3.4 实现改变初始位置
+2017-12-01 V0.4.0 重写部分逻辑，实现暂停和单步执行功能
+2017-12-02 V0.5.0 导出功能，可将路径导出JSON文件
+2017-12-05 V0.6.0 导入功能编写完成
+2017-12-06 V0.6.1 路径导出前展现当前路径信息
+2017-12-06 V0.6.2 加入马的图片
+2017-12-06 V1.0.0 基本版完成
+2017-12-06 V1.0.1 改变位置时可在棋盘上实时显示
+2017-12-06 V1.1.0 初始位置可用鼠标点击选择
+2017-12-06 V1.2.0 解决了部分电脑运行速度极慢的bug
+2017-12-07 V1.2.1 完善菜单
+2017-12-09 V1.2.2 继续完善菜单
+
+点击Yes查看Github详情
+        ''', QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            url = 'https://github.com/yuanyuanzijin/knight-gui/commits/master'
+            webbrowser.open(url, new=0, autoraise=True)
+
     # 源代码获取弹窗
     def menuCode(self):
-        mcode = QMessageBox()
-        mcode.setWindowTitle("获取源代码")
-        mcode.setTextFormat(self, "本项目已开源，地址\nhttps://github.com/yuanyuanzijin/knight-gui")
-        mcode.setStyleSheet("font: 15pt; background-color:rgb(255, 255, 255)")
-        mcode.exec_()
+        reply = QMessageBox.information(self,'源代码获取','本项目已开源，地址\nhttps://github.com/yuanyuanzijin/knight-gui\n\n点击yes使用浏览器打开', QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            url = 'https://github.com/yuanyuanzijin/knight-gui'
+            webbrowser.open(url, new=0, autoraise=True)
+
+    # 关于作者弹窗
+    def menuAuthor(self):
+        reply = QMessageBox.information(self,'关于作者','''
+金禄渊，男，22岁，现就读于大连理工大学控制科学与工程学院。
+土生土长的大连人，业余时间喜欢弹钢琴，写歌，打羽毛球等等。
+爱好编程，经常使用Python和Javascript，喜欢做网页和APP。
+
+个人Github主页：https://github.com/yuanyuanzijin，点击Yes访问
+        ''', QMessageBox.Yes, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            url = 'https://github.com/yuanyuanzijin'
+            webbrowser.open(url, new=0, autoraise=True)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
