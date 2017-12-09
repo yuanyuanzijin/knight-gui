@@ -8,13 +8,15 @@ from find_path import *
 
 class ThreadPath(QThread): 
     pathSignal = pyqtSignal(list)
+    costSignal = pyqtSignal(float)
     def __init__(self, size, history):
         super(ThreadPath,self).__init__()
         self.size = size
         self.history = history
     def run(self):
-        result = search_path(self.size, self.history)
+        result, cost = search_path(self.size, self.history)
         self.pathSignal.emit(result)
+        self.costSignal.emit(cost)
 
 
 class ThreadClock(QThread):
@@ -69,7 +71,7 @@ class App(QMainWindow):
     
     # 绘图函数
     def drawLines(self, qp):
-        pen = QPen(Qt.black, 2, Qt.SolidLine)
+        pen = QPen(Qt.darkBlue, 2, Qt.SolidLine)
         qp.setPen(pen)
         x = self.init_x
         y = self.init_y
@@ -103,6 +105,11 @@ class App(QMainWindow):
             self.btn_start.setText('开始环游')
             self.btn_onestep.setEnabled(True)
             self.onestep()
+
+    # 用时回调函数
+    def callbackCost(self, cost):
+        print(cost)
+        self.statusBar().showMessage('路径查找成功！用时：%s秒' % cost)
 
     # 开启计时线程
     def clock(self):
@@ -170,10 +177,11 @@ class App(QMainWindow):
             self.path.append(self.init_position)
             self.thread = ThreadPath(self.size, self.path)
             self.thread.pathSignal.connect(self.callbackPath)
+            self.thread.costSignal.connect(self.callbackCost)
             self.thread.start()
-            self.btn_start.setText('搜索路径中...')
             self.btn_start.setEnabled(False)
             self.btn_onestep.setEnabled(False)
+            self.statusBar().showMessage('路径搜索中...')
         elif self.start:
             self.start = 0
             self.btn_start.setText('继续环游')
@@ -335,6 +343,7 @@ class App(QMainWindow):
 2017-12-07 V1.2.1 完善菜单
 2017-12-09 V1.2.2 继续完善菜单
 2017-12-09 V1.2.3 棋盘大小可调节为6-30间任意偶数
+2017-12-09 V1.2.4 路径查找后在底部显示运算时间
 
 点击Yes查看Github详情
         ''', QMessageBox.Yes, QMessageBox.No)

@@ -21,7 +21,7 @@
    <string/>
   </property>
   <property name="statusTip">
-   <string>欢迎来到骑士环游小游戏~</string>
+   <string/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="label_clock">

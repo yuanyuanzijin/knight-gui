@@ -1,4 +1,4 @@
-import sys
+import sys, time
 
 def init_path(size):
     allow = []
@@ -38,11 +38,13 @@ def search_next(size, pos, history, allow):
     else:
         return False
 
-def search_path(s, h):
-    allow = init_path(s)
-    position = h[-1]
-    back = search_next(s, position, h, allow)
+def search_path(size, history):
+    allow = init_path(size)
+    position = history[-1]
+    atime = time.time()
+    back = search_next(size, position, history, allow)
+    btime = time.time()
     if back:
-        return h
+        return history, btime-atime
     else:
         return False
