@@ -221,10 +221,10 @@ class App(QMainWindow):
             QMessageBox.warning(self, "提示", "请先开始游戏以获取路径")
             return False
         result= QMessageBox.information(self, "路径导出", 
-            "路径预览：\n\n棋盘尺寸：%d\n当前步数：%d\n当前路径：%s\n\n确定导出路径？" % (self.size, self.step, self.path),
+            "路径预览：\n\n棋盘尺寸：%d\n当前步数：%d\n当前路径：%s\n\n确定导出路径？" % (self.size, self.step, self.path[:300]),
             QMessageBox.Yes | QMessageBox.No)
         if result == QMessageBox.Yes:
-            filepath, ok = QFileDialog.getSaveFileName(self, "文件保存", "C:/", "JSON Files (*.json)")
+            filepath, ok = QFileDialog.getSaveFileName(self, "文件保存", "C:/knight_%s_%s.json" % (self.size, self.step), "JSON Files (*.json);;ALL Files (*)")
             if not filepath:
                 return False
             save_content = self.get_save_content()
@@ -239,7 +239,7 @@ class App(QMainWindow):
         if self.step > 1:
             QMessageBox.warning(self, "提示", "游戏进行中，请点击重新开始后再导入")
             return False
-        fileName, filetype = QFileDialog.getOpenFileName(self, "选取文件", "C:/", "JSON Files (*.json)")
+        fileName, filetype = QFileDialog.getOpenFileName(self, "选取文件", "C:/", "JSON Files (*.json);;All Files (*)")
         if not fileName:
             return False
         if not fileName.endswith('.json'):
