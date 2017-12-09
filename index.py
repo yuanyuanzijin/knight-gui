@@ -53,11 +53,7 @@ class App(QMainWindow):
         self.btn_restart.clicked.connect(self.btn_restart_onclick)
         self.spin_x.valueChanged.connect(self.pos_changed)
         self.spin_y.valueChanged.connect(self.pos_changed)
-        self.choices = [self.radio_6, self.radio_8, self.radio_10, self.radio_12]
-        self.radio_6.clicked.connect(lambda:self.changesize(6))
-        self.radio_8.clicked.connect(lambda:self.changesize(8))
-        self.radio_10.clicked.connect(lambda:self.changesize(10))
-        self.radio_12.clicked.connect(lambda:self.changesize(12))
+        self.spin_size.valueChanged.connect(self.changesize)
         self.slider_clock.valueChanged.connect(self.changeValue)
         self.btn_save.clicked.connect(self.btn_save_onclick)
         self.image_label = QLabel(self)  
@@ -255,14 +251,7 @@ class App(QMainWindow):
             self.path = self.allpath[0:self.step]
             self.step_time = step_time
             self.slider_clock.setValue(self.step_time)
-            if size == 6:
-                self.radio_6.setChecked(True)
-            elif size == 8:
-                self.radio_8.setChecked(True)
-            elif size == 10:
-                self.radio_10.setChecked(True)
-            else:
-                self.radio_12.setChecked(True)
+            self.spin_size.setValue(self.size)
             self.init_position = allpath[0]
             self.spin_x.setValue(self.init_position[0] + 1)
             self.spin_y.setValue(self.init_position[1] + 1)
@@ -276,19 +265,22 @@ class App(QMainWindow):
             return False
 
     # 改变棋盘大小触发
-    def changesize(self, size):
+    def changesize(self):
+        new_size = self.spin_size.value()
         if self.step > 1:
-            QMessageBox.warning(self, "提示", "游戏进行中，请重新开始再切换棋盘！")
+            self.spin_size.setValue(self.size)
+            if new_size != self.size:
+                QMessageBox.warning(self, "提示", "游戏进行中，请重新开始再切换棋盘！")
             return False
-        self.size = size
+        self.size = new_size
         self.each = self.length/self.size
         self.path = []
         self.step = 1
         self.allpath = []
         self.repaint()
         self.start = 0
-        self.spin_x.setMaximum(size)
-        self.spin_y.setMaximum(size)
+        self.spin_x.setMaximum(self.size)
+        self.spin_y.setMaximum(self.size)
         self.pos_changed()
 
     # 改变动画速度触发
@@ -342,6 +334,7 @@ class App(QMainWindow):
 2017-12-06 V1.2.0 解决了部分电脑运行速度极慢的bug
 2017-12-07 V1.2.1 完善菜单
 2017-12-09 V1.2.2 继续完善菜单
+2017-12-09 V1.2.3 棋盘大小可调节为6-30间任意偶数
 
 点击Yes查看Github详情
         ''', QMessageBox.Yes, QMessageBox.No)
