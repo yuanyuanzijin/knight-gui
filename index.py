@@ -14,8 +14,8 @@ class ThreadPath(QThread):
         self.size = size
         self.history = history
     def run(self):
-        result, cost = search_path(self.size, self.history)
-        self.pathSignal.emit(result)
+        back, cost = search_path(self.size, self.history)
+        self.pathSignal.emit(back)
         self.costSignal.emit(cost)
 
 
@@ -42,19 +42,19 @@ class App(QMainWindow):
         self.init_y = 40
         self.length = 500
         self.size = 8
-        self.init_position = [0,0]
+        self.result = 0
         self.each = self.length/self.size
         self.path = []
-        self.step = 1
+        self.step = 0
         self.allpath = []
         self.step_time = 0.5
         self.start = 0
+        self.raws = [[1,2], [1,-2], [2,1], [2,-1], [-1,2], [-1,-2], [-2,1], [-2,-1]]
         self.btn_import.clicked.connect(self.btn_import_onclick)
         self.btn_start.clicked.connect(self.btn_start_onclick)
         self.btn_onestep.clicked.connect(self.btn_onestep_onclick)
+        self.btn_return.clicked.connect(self.btn_return_onclick)
         self.btn_restart.clicked.connect(self.btn_restart_onclick)
-        self.spin_x.valueChanged.connect(self.pos_changed)
-        self.spin_y.valueChanged.connect(self.pos_changed)
         self.spin_size.valueChanged.connect(self.changesize)
         self.slider_clock.valueChanged.connect(self.changeValue)
         self.btn_save.clicked.connect(self.btn_save_onclick)
@@ -63,7 +63,6 @@ class App(QMainWindow):
         self.image_label.setPixmap(self.image)
         self.image_label.setGeometry(0, 0, 0, 0)
         self.image_label.setScaledContents(True)
-        self.image_label.setGeometry(self.init_x, self.init_y, self.each-1, self.each-1)
 
         self.actionHistory.triggered.connect(self.menuHistory)
         self.actionGetCode.triggered.connect(self.menuCode)
@@ -95,16 +94,20 @@ class App(QMainWindow):
 
     # 获取路径子线程执行后的回调函数
     def callbackPath(self, back):
-        print(back)
-        self.allpath = back
-        self.btn_start.setEnabled(True)
-        if self.start:
-            self.btn_start.setText('暂停游戏')
-            self.callbackClock()
+        if back:
+            self.result = 1
+            self.allpath = back
+            self.btn_start.setEnabled(True)
+            if self.start:
+                self.btn_start.setText('暂停游戏')
+                self.callbackClock()
+            else:
+                self.btn_start.setText('开始环游')
+                self.btn_onestep.setEnabled(True)
+                self.onestep()
         else:
-            self.btn_start.setText('开始环游')
-            self.btn_onestep.setEnabled(True)
-            self.onestep()
+            self.start = 0
+            QMessageBox.warning(self, '提示', '没有路径啦！')
 
     # 用时回调函数
     def callbackCost(self, cost):
@@ -146,6 +149,7 @@ class App(QMainWindow):
     # 获取保存内容函数
     def get_save_content(self):
         save = {
+            'mode': self.result,
             'size': self.size,
             'step': self.step,
             'allpath': self.allpath,
@@ -159,22 +163,21 @@ class App(QMainWindow):
         qp = QPainter()
         qp.begin(self)
         self.drawLines(qp)
-        if self.allpath:
+        if self.path:
             for i in self.path[0:-1]:
                 self.drawRectangles(qp, i)
             self.drawRectanglesActive(qp, self.path[-1])
         qp.end()
 
-    # 点击开始游戏触发
+    # 点击提示全部触发
     def btn_start_onclick(self):
-        if self.step == 1:
+        # 没获取过提示
+        if not self.result:
+            if not self.path:
+                QMessageBox.warning(self, "提示", "请点击棋盘选择初始位置")
+                return False
             self.start = 1
-            self.path = []
             self.allpath = []
-            init_X = self.spin_x.value()-1
-            init_Y = self.spin_y.value()-1
-            self.init_position = [init_X, init_Y]
-            self.path.append(self.init_position)
             self.thread = ThreadPath(self.size, self.path)
             self.thread.pathSignal.connect(self.callbackPath)
             self.thread.costSignal.connect(self.callbackCost)
@@ -182,10 +185,12 @@ class App(QMainWindow):
             self.btn_start.setEnabled(False)
             self.btn_onestep.setEnabled(False)
             self.statusBar().showMessage('路径搜索中...')
+        # 获取过提示，点击暂停
         elif self.start:
             self.start = 0
             self.btn_start.setText('继续环游')
             self.btn_onestep.setEnabled(True)
+        # 获取过提示，点击继续
         else:
             self.start = 1
             self.callbackClock()
@@ -194,26 +199,48 @@ class App(QMainWindow):
     
     # 点击单步执行触发
     def btn_onestep_onclick(self):
-        if self.step == 1:
+        # 没获取过提示
+        if not self.result:
             self.btn_start_onclick()
             self.start = 0
+        # 获取过提示
         else:
             self.onestep()
 
+    # 点击悔棋触发
+    def btn_return_onclick(self):
+        # 非自动环游状态下
+        if not self.start:
+            # 如果当前步数为0
+            if not self.step:
+                QMessageBox.warning(self, "提示", "没有棋可退啦！")
+                return False
+            # 如果走过棋
+            else:
+                self.step -= 1
+                self.path = self.path[:-1]
+                self.btn_start.setText('继续环游')
+                self.btn_start.setEnabled(True)
+                self.btn_onestep.setEnabled(True)
+                if not self.step:
+                    self.image_label.setGeometry(0, 0, 0, 0)
+                self.repaint()
+        else:
+            QMessageBox.warning(self, "提示", "自动环游中，请暂停后重试！")
+            return False
+
     # 点击重新开始触发
     def btn_restart_onclick(self):
-        self.step = 1
+        self.result = 0
+        self.step = 0
         self.path = []
         self.allpath = []
         self.repaint()
         self.start = 0
-        init_X = self.spin_x.value()-1
-        init_Y = self.spin_y.value()-1
-        self.init_position = [init_X, init_Y]
         self.btn_start.setEnabled(True)
         self.btn_onestep.setEnabled(True)
-        self.btn_start.setText('开始环游')
-        self.image_label.setGeometry(self.init_x+self.init_position[1]*self.each, self.init_y+self.init_position[0]*self.each, self.each-1, self.each-1)
+        self.btn_start.setText('提示全部')
+        self.image_label.setGeometry(0, 0, 0, 0)
 
     # 点击保存路径触发
     def btn_save_onclick(self):
@@ -248,10 +275,12 @@ class App(QMainWindow):
         try:
             with open(fileName, 'r') as f:
                 content = json.loads(f.read())
+                mode = content['mode']
                 size = content['size']
                 step = content['step']
                 allpath = content['allpath']
                 step_time = content['step_time']
+            self.result = mode
             self.size = size
             self.step = step
             self.each = self.length/self.size
@@ -260,16 +289,10 @@ class App(QMainWindow):
             self.step_time = step_time
             self.slider_clock.setValue(self.step_time)
             self.spin_size.setValue(self.size)
-            self.init_position = allpath[0]
-            self.spin_x.setValue(self.init_position[0] + 1)
-            self.spin_y.setValue(self.init_position[1] + 1)
-            self.spin_x.setMaximum(size)
-            self.spin_y.setMaximum(size)
             QMessageBox.warning(self, "提示", "历史导入成功！")
             self.repaint()
         except Exception as e:
             QMessageBox.warning(self, "提示", "文件格式错误！")
-            print(e)
             return False
 
     # 改变棋盘大小触发
@@ -283,35 +306,43 @@ class App(QMainWindow):
         self.size = new_size
         self.each = self.length/self.size
         self.path = []
-        self.step = 1
+        self.step = 0
+        self.result = 0
         self.allpath = []
         self.repaint()
         self.start = 0
-        self.spin_x.setMaximum(self.size)
-        self.spin_y.setMaximum(self.size)
-        self.pos_changed()
+        self.image_label.setGeometry(0, 0, 0, 0)
+
 
     # 改变动画速度触发
     def changeValue(self, value):  
         self.step_time = self.slider_clock.value()/10
         self.label_clock.setText(str(self.step_time))
 
-    # 修改起始位置触发
-    def pos_changed(self):
-        init_X = self.spin_x.value()-1
-        init_Y = self.spin_y.value()-1
-        self.init_position = [init_X, init_Y]
-        self.image_label.setGeometry(self.init_x+self.init_position[1]*self.each, self.init_y+self.init_position[0]*self.each, self.each-1, self.each-1)
-
     # 鼠标点击触发
     def mousePressEvent(self, e):
-        if self.step <= 1:
+        # 非自动环游开始状态下
+        if not self.start:
+            # 如果鼠标点击在棋盘范围内
             if e.x() >= 20 and e.x() <= 520 and e.y() >= 40 and e.y() <= 540:
                 mouse_x = int((e.y()-40)/self.each)
                 mouse_y = int((e.x()-20)/self.each)
-                self.init_position = [mouse_x, mouse_y]
-                self.spin_x.setValue(mouse_x+1)
-                self.spin_y.setValue(mouse_y+1)
+                new_pos = [mouse_x, mouse_y]
+                # 如果不是第一步，则判断是否可以这么走
+                if self.step:
+                    # 如果点击的位置没走过
+                    if new_pos not in self.path:
+                        x_ = new_pos[0] - self.path[-1][0]
+                        y_ = new_pos[1] - self.path[-1][1]
+                        if [x_, y_] in self.raws:
+                            self.path.append(new_pos)
+                            self.result = 0
+                            self.step += 1
+                # 如果是第一次，则不限制
+                else:
+                    self.path.append(new_pos)
+                    self.step += 1
+                self.repaint()
 
     # 关闭窗口时触发
     def closeEvent(self, event):

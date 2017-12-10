@@ -47,4 +47,4 @@ def search_path(size, history):
     if back:
         return history, btime-atime
     else:
-        return False
+        return [], btime-atime
