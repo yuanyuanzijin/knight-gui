@@ -49,6 +49,7 @@ class App(QMainWindow):
         self.allpath = []
         self.step_time = 0.5
         self.start = 0
+        self.searching = 0
         self.raws = [[1,2], [1,-2], [2,1], [2,-1], [-1,2], [-1,-2], [-2,1], [-2,-1]]
         self.btn_import.clicked.connect(self.btn_import_onclick)
         self.btn_start.clicked.connect(self.btn_start_onclick)
@@ -94,6 +95,7 @@ class App(QMainWindow):
 
     # 获取路径子线程执行后的回调函数
     def callbackPath(self, back):
+        self.searching = 0
         if back:
             self.result = 1
             self.allpath = back
@@ -102,7 +104,7 @@ class App(QMainWindow):
                 self.btn_start.setText('暂停游戏')
                 self.callbackClock()
             else:
-                self.btn_start.setText('开始环游')
+                self.btn_start.setText('提示全部')
                 self.btn_onestep.setEnabled(True)
                 self.onestep()
         else:
@@ -168,10 +170,11 @@ class App(QMainWindow):
         qp = QPainter()
         qp.begin(self)
         self.drawLines(qp)
-        if self.path:
+        if not self.searching and self.path:
             for i in self.path[0:-1]:
                 self.drawRectangles(qp, i)
             self.drawRectanglesActive(qp, self.path[-1])
+            self.label_step.setText(str(self.step))
         qp.end()
 
     # 点击提示全部触发
@@ -182,6 +185,7 @@ class App(QMainWindow):
                 QMessageBox.warning(self, "提示", "请点击棋盘选择初始位置")
                 return False
             self.start = 1
+            self.searching = 1
             self.allpath = []
             self.thread = ThreadPath(self.size, self.path)
             self.thread.pathSignal.connect(self.callbackPath)
@@ -193,13 +197,13 @@ class App(QMainWindow):
         # 获取过提示，点击暂停
         elif self.start:
             self.start = 0
-            self.btn_start.setText('继续环游')
+            self.btn_start.setText('继续提示')
             self.btn_onestep.setEnabled(True)
         # 获取过提示，点击继续
         else:
             self.start = 1
             self.callbackClock()
-            self.btn_start.setText('暂停游戏')
+            self.btn_start.setText('暂停提示')
             self.btn_onestep.setEnabled(False)
     
     # 点击单步执行触发
@@ -224,7 +228,7 @@ class App(QMainWindow):
             else:
                 self.step -= 1
                 self.path = self.path[:-1]
-                self.btn_start.setText('继续环游')
+                self.btn_start.setText('继续提示')
                 self.btn_start.setEnabled(True)
                 self.btn_onestep.setEnabled(True)
                 if not self.step:
@@ -242,6 +246,7 @@ class App(QMainWindow):
         self.allpath = []
         self.repaint()
         self.start = 0
+        self.searching = 0
         self.btn_start.setEnabled(True)
         self.btn_onestep.setEnabled(True)
         self.btn_start.setText('提示全部')
@@ -252,8 +257,12 @@ class App(QMainWindow):
         if not self.allpath:
             QMessageBox.warning(self, "提示", "请先开始游戏以获取路径")
             return False
-        result= QMessageBox.information(self, "路径导出", 
-            "路径预览：\n\n棋盘尺寸：%d\n当前步数：%d\n当前路径：%s\n\n确定导出路径？" % (self.size, self.step, self.path[:300]),
+        if self.result:
+            dsp = '电脑模式'
+        else:
+            dsp = '玩家模式'
+        result = QMessageBox.information(self, "路径导出", 
+            "路径预览：\n\n当前模式：%s\n棋盘尺寸：%d\n当前步数：%d\n当前路径：%s\n\n确定导出路径？" % (dsp, self.size, self.step, self.path[:300]),
             QMessageBox.Yes | QMessageBox.No)
         if result == QMessageBox.Yes:
             filepath, ok = QFileDialog.getSaveFileName(self, "文件保存", "C:/knight_%s_%s.json" % (self.size, self.step), "JSON Files (*.json);;ALL Files (*)")
@@ -289,8 +298,12 @@ class App(QMainWindow):
             self.size = size
             self.step = step
             self.each = self.length/self.size
-            self.allpath = allpath
-            self.path = self.allpath[0:self.step]
+            if self.result:
+                self.allpath = allpath
+                self.path = self.allpath[0:self.step]
+            else:
+                self.allpath = []
+                self.path = allpath
             self.step_time = step_time
             self.slider_clock.setValue(self.step_time)
             self.spin_size.setValue(self.size)
@@ -382,6 +395,7 @@ class App(QMainWindow):
 2017-12-09 V1.2.4 路径查找后在底部显示运算时间
 2017-12-09 V2.0.0 全新下棋模式上线
 2017-12-10 V2.0.1 bug修复
+2017-12-11 V2.1.0 正式上线，提交作业
 
 点击Yes查看Github详情
         ''', QMessageBox.Yes, QMessageBox.No)
@@ -391,7 +405,7 @@ class App(QMainWindow):
 
     # 源代码获取弹窗
     def menuCode(self):
-        reply = QMessageBox.information(self,'源代码获取','本项目已开源，地址\nhttps://github.com/yuanyuanzijin/knight-gui\n\n点击yes使用浏览器打开', QMessageBox.Yes, QMessageBox.No)
+        reply = QMessageBox.information(self,'源代码获取','本项目已上传至GitHub，地址\nhttps://github.com/yuanyuanzijin/knight-gui\n\n点击yes使用浏览器打开', QMessageBox.Yes, QMessageBox.No)
         if reply == QMessageBox.Yes:
             url = 'https://github.com/yuanyuanzijin/knight-gui'
             webbrowser.open(url, new=0, autoraise=True)
