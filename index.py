@@ -148,11 +148,16 @@ class App(QMainWindow):
 
     # 获取保存内容函数
     def get_save_content(self):
+        # 动画模式
+        if self.result:
+            p = self.allpath
+        else:
+            p = self.path
         save = {
             'mode': self.result,
             'size': self.size,
             'step': self.step,
-            'allpath': self.allpath,
+            'allpath': p,
             'step_time': self.step_time
         }
         return json.dumps(save)
@@ -375,6 +380,8 @@ class App(QMainWindow):
 2017-12-09 V1.2.2 继续完善菜单
 2017-12-09 V1.2.3 棋盘大小可调节为6-30间任意偶数
 2017-12-09 V1.2.4 路径查找后在底部显示运算时间
+2017-12-09 V2.0.0 全新下棋模式上线
+2017-12-10 V2.0.1 bug修复
 
 点击Yes查看Github详情
         ''', QMessageBox.Yes, QMessageBox.No)

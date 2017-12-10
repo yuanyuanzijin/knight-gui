@@ -28,7 +28,7 @@
     <property name="geometry">
      <rect>
       <x>670</x>
-      <y>240</y>
+      <y>330</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -41,7 +41,7 @@
     <property name="geometry">
      <rect>
       <x>690</x>
-      <y>240</y>
+      <y>330</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -57,7 +57,7 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>210</y>
+      <y>300</y>
       <width>71</width>
       <height>15</height>
      </rect>
@@ -76,7 +76,7 @@
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>230</y>
+      <y>320</y>
       <width>91</width>
       <height>31</height>
      </rect>
@@ -104,7 +104,7 @@
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>320</y>
+      <y>360</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -117,7 +117,7 @@
     <property name="geometry">
      <rect>
       <x>620</x>
-      <y>400</y>
+      <y>440</y>
       <width>71</width>
       <height>31</height>
      </rect>
@@ -133,7 +133,7 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>70</y>
+      <y>230</y>
       <width>60</width>
       <height>15</height>
      </rect>
@@ -152,7 +152,7 @@
     <property name="geometry">
      <rect>
       <x>550</x>
-      <y>110</y>
+      <y>270</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -171,7 +171,7 @@
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>360</y>
+      <y>400</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -184,7 +184,7 @@
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>440</y>
+      <y>480</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -197,7 +197,7 @@
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>20</y>
+      <y>180</y>
       <width>121</width>
       <height>31</height>
      </rect>
@@ -210,7 +210,7 @@
     <property name="geometry">
      <rect>
       <x>620</x>
-      <y>70</y>
+      <y>230</y>
       <width>34</width>
       <height>20</height>
      </rect>
@@ -232,13 +232,26 @@
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>400</y>
+      <y>440</y>
       <width>41</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
      <string>悔棋</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>620</x>
+      <y>270</y>
+      <width>54</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0</string>
     </property>
    </widget>
    <zorder>label</zorder>
@@ -254,6 +267,7 @@
    <zorder>btn_import</zorder>
    <zorder>spin_size</zorder>
    <zorder>btn_return</zorder>
+   <zorder>label_4</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
